@@ -1,0 +1,14 @@
+[Unit]
+Description=VirtualBMC for %i
+Wants=network-online.target libvirtd.service
+After=network-online.target libvirtd.service
+
+[Service]
+Type=forking
+PIDFile=/root/.vbmc/%i/pid
+ExecStart=/usr/bin/vbmc start %i
+ExecStop=/usr/bin/vbmc stop %i
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
