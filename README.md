@@ -4,7 +4,9 @@ This document provides instructions for using a hypervisor in the Red Hat Field 
 lab for the OpenShift Virtualization (CNV) 2.5 hackfest.
 
 These instructions use the environment variable `NODE` to refer to the hypervisor.  Set this
-variable to the fully qualified domain name of your assigned hypervisor, for example:
+variable to the fully qualified domain name of your assigned hypervisor.
+
+For example:
 
 ```
 $ export NODE=node06.pemlab.rdu2.redhat.com
