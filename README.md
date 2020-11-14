@@ -25,8 +25,10 @@ $ ssh-copy-id root@${NODE}
 The authenticity of host 'node06.pemlab.rdu2.redhat.com (10.11.173.26)' can't be established.
 ECDSA key fingerprint is SHA256:inctUkcIO4uQYRe5pt3dS8KFfDddZKlovKFnjMQv0JY.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
-/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
-/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are …
+…already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to …
+…install the new keys
 root@node06.pemlab.rdu2.redhat.com's password:
 
 Number of key(s) added: 1
@@ -191,7 +193,8 @@ Last login: Thu Nov 12 23:36:08 2020 from 192.168.123.254
 Download [`install-config.yaml`](https://raw.githubusercontent.com/RHFieldProductManagement/CNV-2.5-hackfest/master/install-config.yaml).
 
 ```
-[kni@prov ~]$ curl -O https://raw.githubusercontent.com/RHFieldProductManagement/CNV-2.5-hackfest/master/install-config.yaml
+[kni@prov ~]$ curl -O \
+	https://raw.githubusercontent.com/RHFieldProductManagement/CNV-2.5-hackfest/master/install-config.yaml
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100  1462  100  1462    0     0  10750      0 --:--:-- --:--:-- --:--:-- 10750
