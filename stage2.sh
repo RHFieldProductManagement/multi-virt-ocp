@@ -20,19 +20,19 @@ ssh root@${NODE} virt-install -n provisioner --memory 16384 --vcpus 4 --cpu host
 ssh root@${NODE} virsh start provisioner
 
 ssh root@${NODE} virt-install -n ocp0 --memory 32768 --vcpus 6 --cpu host --os-variant rhel8.2 \
-	--disk path=/var/lib/libvirt/images/master-0.qcow2,bus=scsi,discard=unmap \
+	--disk path=/var/lib/libvirt/images/ocp0.qcow2,bus=scsi,discard=unmap \
 	-w network=provisioning,model=virtio,mac=de:ad:be:ef:03:00 \
 	-w network=baremetal,model=virtio,mac=de:ad:be:ef:01:00 \
 	--controller scsi,model=virtio-scsi --import --noreboot
 
 ssh root@${NODE} virt-install -n ocp1 --memory 32768 --vcpus 6 --cpu host --os-variant rhel8.2 \
-	--disk path=/var/lib/libvirt/images/master-1.qcow2,bus=scsi,discard=unmap \
+	--disk path=/var/lib/libvirt/images/ocp1.qcow2,bus=scsi,discard=unmap \
 	-w network=provisioning,model=virtio,mac=de:ad:be:ef:03:01 \
 	-w network=baremetal,model=virtio,mac=de:ad:be:ef:01:01 \
 	--controller scsi,model=virtio-scsi --import --noreboot
 
 ssh root@${NODE} virt-install -n ocp2 --memory 32768 --vcpus 6 --cpu host --os-variant rhel8.2 \
-	--disk path=/var/lib/libvirt/images/master-2.qcow2,bus=scsi,discard=unmap \
+	--disk path=/var/lib/libvirt/images/ocp2.qcow2,bus=scsi,discard=unmap \
 	-w network=provisioning,model=virtio,mac=de:ad:be:ef:03:02 \
 	-w network=baremetal,model=virtio,mac=de:ad:be:ef:01:02 \
 	--controller scsi,model=virtio-scsi --import --noreboot
@@ -50,3 +50,7 @@ ssh root@${NODE} systemctl enable --now vbmc@ocp{0..2}
 
 ssh root@${NODE} yum -y install squid
 ssh root@${NODE} systemctl enable squid --now
+
+ssh root@${NODE} yum -y install sshpass
+ssh root@${NODE} 'ssh-keygen -t rsa -q -f ~/.ssh/id_rsa -N ""'
+ssh root@${NODE} 'echo CNV25h@ck | sshpass ssh-copy-id -oStrictHostKeyChecking=no kni@prov'
