@@ -4,7 +4,7 @@ set -x
 
 NODE=$1
 
-ssh root@${NODE} yum -y install epel-release centos-release-openstack-queens
+ssh root@${NODE} yum -y install epel-release centos-release-openstack-queens pigz
 ssh root@${NODE} yum -y update
 ssh root@${NODE} firewall-cmd --permanent --new-zone baremetal
 ssh root@${NODE} firewall-cmd --permanent --zone baremetal --add-service ssh --add-service dns --add-service dhcp
