@@ -1,0 +1,30 @@
+apiVersion: v1
+baseDomain: rhacm.lab
+metadata:
+  name: ocp1
+networking:
+  machineCIDR: 192.168.123.0/24
+  networkType: OpenShiftSDN
+compute:
+- name: worker
+  replicas: 0
+controlPlane:
+  name: ocp1
+  replicas: 1
+  platform:
+    baremetal: {}
+platform:
+  baremetal:
+    apiVIP: 192.168.123.10
+    ingressVIP: 192.168.123.11
+    provisioningBridge: provisioning
+    provisioningNetworkCIDR: 172.22.0.0/24
+    provisioningNetworkInterface: ens3
+    hosts:
+      - name: ocp1-0
+        role: master
+        bmc:
+          address: ipmi://192.168.123.249
+          username: admin
+          password: CNV25h@ck
+        bootMACAddress: de:ad:be:ef:03:01
