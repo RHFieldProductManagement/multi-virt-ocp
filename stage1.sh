@@ -4,6 +4,8 @@ set -x
 
 NODE=$1
 
+ssh root@${NODE} 'hostname > /etc/hostname'
+
 ssh root@${NODE} yum -y install epel-release centos-release-openstack-queens pigz
 ssh root@${NODE} yum -y update
 ssh root@${NODE} firewall-cmd --permanent --new-zone baremetal
@@ -20,5 +22,6 @@ scp ifcfg-metal ifcfg-prov ifcfg-cnv root@${NODE}:/etc/sysconfig/network-scripts
 ssh root@${NODE} 'echo "options kvm_intel nested=1" > /etc/modprobe.d/kvm.conf'
 ssh root@${NODE} 'virsh net-destroy default && virsh net-undefine default'
 scp resolv.conf dnsmasq.conf root@${NODE}:/etc/
+ssh root@${NODE} sed -i s/ocp.hackfest/rhacm.lab/ /etc/resolv.conf
 ssh root@${NODE} systemctl enable dnsmasq
 ssh root@${NODE} reboot

@@ -3,6 +3,7 @@
 set -x
 
 NODE=$1
+OCP_VERSION=latest-4.7
 
 scp net-baremetal.xml net-provisioning.xml net-cnv.xml root@${NODE}:/tmp/
 ssh root@${NODE} 'virsh net-define /tmp/net-baremetal.xml && virsh net-autostart baremetal && virsh net-start baremetal'
@@ -51,6 +52,33 @@ ssh root@${NODE} systemctl enable --now vbmc@ocp{0..2}
 ssh root@${NODE} yum -y install squid
 ssh root@${NODE} systemctl enable squid --now
 
+# Host seems to have problems resolving prov on the first few tries; weird
+while ! ssh root@${NODE} ping -c1 prov ; do
+	sleep 1
+done
+
 ssh root@${NODE} yum -y install sshpass
 ssh root@${NODE} 'ssh-keygen -t rsa -q -f ~/.ssh/id_rsa -N ""'
 ssh root@${NODE} 'echo CNV25h@ck | sshpass ssh-copy-id -oStrictHostKeyChecking=no kni@prov'
+ssh root@${NODE} 'cat .ssh/authorized_keys | ssh kni@prov "cat - >> .ssh/authorized_keys"'
+
+ssh -J root@${NODE} kni@prov 'rm -rf *'
+scp -J root@${NODE} ocp{0..2}-install-config.yaml pull-secret.txt ocp-deploy.sh ocp-api-inject.sh kni@prov:
+ssh -J root@${NODE} kni@prov 'jq -c . pull-secret.txt > pull-secret.json'
+
+for YAML in ocp{0..2}-install-config.yaml ; do
+	ssh -J root@${NODE} kni@prov "echo -n \"pullSecret: '\" >> $YAML"
+	ssh -J root@${NODE} kni@prov "cat pull-secret.json | tr -d \\\\n >> $YAML"
+	ssh -J root@${NODE} kni@prov "echo \"'\" >> $YAML"
+	ssh -J root@${NODE} kni@prov "echo -n \"sshKey: '\" >> $YAML"
+	ssh -J root@${NODE} kni@prov "cat .ssh/id_rsa.pub | tr -d \\\\n >> $YAML"
+	ssh -J root@${NODE} kni@prov "echo \"'\" >> $YAML"
+done
+
+OCP_RELEASE_IMAGE=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OCP_VERSION}/release.txt | grep 'Pull From: quay.io' | awk -F ' ' '{print $3}')
+OCP_CLIENT_URL=https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OCP_VERSION}/openshift-client-linux.tar.gz
+
+ssh -J root@${NODE} kni@prov "curl -s $OCP_CLIENT_URL | tar xz oc"
+ssh -J root@${NODE} kni@prov "./oc adm release extract --registry-config pull-secret.txt --command openshift-baremetal-install $OCP_RELEASE_IMAGE"
+ssh -J root@${NODE} kni@prov 'sudo cp oc openshift-baremetal-install /usr/local/bin/ && rm oc openshift-baremetal-install'
+
